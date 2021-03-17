@@ -1,6 +1,21 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
+import { Client } from 'node-postgres';
+
+/*
+===== PoostgreSQL Connection
+*/
+
+const client = new Client({
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGDBPASSWD,
+  port: process.env.PGPORT,
+});
+
+client.connect();
 
 const app = express();
 
