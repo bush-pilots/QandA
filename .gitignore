@@ -105,3 +105,6 @@ dist
 
 # VSCode settings
 .vscode/
+
+# CSV Import
+src/db/csvData/
