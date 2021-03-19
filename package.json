@@ -4,7 +4,7 @@
   "description": "## API Access for Project Hotelier",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node src/index.js",
+    "start": "nodemon --trace-warning --exec babel-node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -34,8 +34,13 @@
     "nodemon": "^2.0.7"
   },
   "dependencies": {
+    "@fast-csv/parse": "^4.3.6",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "fast-csv": "^4.3.6",
+    "node-postgres": "^0.6.2",
+    "pg": "^8.5.1",
+    "readline-promise": "^1.0.5"
   }
 }
