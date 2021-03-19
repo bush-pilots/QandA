@@ -2,6 +2,7 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import query from './db/index';
+import { readQuestions } from './db/transformCSV';
 
 // Import routes
 import indexRouter from './routes/index';
@@ -17,7 +18,7 @@ app.use('/qa', qaRoutes);
 
 app.get('/dbtest', (req, res) => {
   query('SELECT * FROM answers', (err, resp) => {
-    res.send(resp);
+    res.send(readQuestions());
   });
 });
 

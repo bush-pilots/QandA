@@ -2,7 +2,7 @@ import Question from '../models/Question';
 
 // Return a list of all questions
 exports.getQuestions = (req, res) => {
-  res.send('NOT IMPLEMENTED: Questions List');
+  res.send(Question.queryGetQuestions(req.params.product_id));
 };
 
 // Add a new question
