@@ -1,8 +1,9 @@
 import Question from '../models/Question';
 
 // Return a list of all questions
-exports.getQuestions = (req, res) => {
-  res.send(Question.queryGetQuestions(req.params.product_id));
+exports.getQuestions = async (req, res) => {
+  const results = await Question.queryGetQuestions(Number(req.query.product_id));
+  res.send(results);
 };
 
 // Add a new question
