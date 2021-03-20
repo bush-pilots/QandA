@@ -6,7 +6,6 @@ exports.getAnswers = async (req, res) => {
     req.params.question_id,
     req.query.limit,
     req.query.page,
-    false,
   );
   res.send(results);
 };

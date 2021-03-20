@@ -4,7 +4,7 @@ import Question from '../models/Question';
 exports.getQuestions = async (req, res) => {
   // eslint-disable-next-line camelcase
   const { product_id, limit, page } = req.query;
-  const results = await Question.queryGetQuestions(product_id, limit, page, true);
+  const results = await Question.queryGetQuestions(product_id, limit, page);
   if (results.status) {
     res.status(200);
   } else {

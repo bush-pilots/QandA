@@ -15,7 +15,6 @@ exports.queryGetAnswers = async (questionId, limit = 5, page = 1, forQorA) => {
     WHERE question_id = $1
     LIMIT $2
   `;
-
   const { rows } = await query(forQorA ? textForQ : textForA, [questionId, limit]);
   const answers = await Promise.all(rows.map(async (answer) => ({
     ...answer,
@@ -36,16 +35,6 @@ exports.queryGetAnswers = async (questionId, limit = 5, page = 1, forQorA) => {
     };
 };
 
-// exports.queryGetAnswers = async (questionId, limit = 5, page = 1) => {
-
-//   const { rows } = await query(text, [questionId, limit]);
-//   const answers = await Promise.all(rows.map(async (answer) => ({
-//     ...answer,
-//     photos: await Photos.queryGetPhotos(answer.id),
-//   })));
-//   // const reduced = answers.reduce((acc, answer) => ({ ...acc, [answer.answer_id]: answer }), {});
-
-// };
 
 exports.queryAddAnswer = ({ body, helpfulness }, questionId) => {
   const { rows } = query(
@@ -58,11 +47,11 @@ exports.queryAddAnswer = ({ body, helpfulness }, questionId) => {
   return rows;
 };
 
-exports.queryUpdateAnswer = ({ body, helpfulness }, answerId) => {
+exports.queryReportAnswer = (answerId) => {
   const { rows } = query(
     `UPDATE answers
-     SET body = ${body}, a_helpfulness = ${helpfulness}
-     WHERE id = ${answerId}`,
+     SET reported = TRUE
+     WHERE id = $1}`, [answerId]
   );
   return rows;
 };

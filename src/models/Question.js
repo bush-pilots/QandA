@@ -1,24 +1,24 @@
 import query from '../db/index';
 import Answer from './Answer';
 
-exports.queryGetQuestions = async (productId, limit = 5, page = 1, forQorA) => {
+exports.queryGetQuestions = async (productId, limit = 5, page = 1) => {
   try {
     const text = `
-      SELECT
-        id AS question_id,
-        body AS question_body,
-        created_at AS question_date,
-        username AS asker_name,
-        helpfulness AS question_helpfulness,
-        reported
-      FROM questions
-      WHERE product_id = $1
-      LIMIT $2
+    SELECT
+    id AS question_id,
+    body AS question_body,
+    created_at AS question_date,
+    username AS asker_name,
+    helpfulness AS question_helpfulness,
+    reported
+    FROM questions
+    WHERE product_id = $1
+    LIMIT $2
     `;
     const { rows } = await query(text, [productId, limit]);
     const questions = await Promise.all(rows.map(async (question) => ({
       ...question,
-      answers: await Answer.queryGetAnswers(question.question_id, limit, page, forQorA),
+      answers: await Answer.queryGetAnswers(question.question_id, limit, page, true),
     })));
     return {
       status: true,
