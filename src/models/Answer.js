@@ -45,33 +45,61 @@ exports.queryAddAnswer = async (params) => {
   try {
     const {
       body,
-      helpfulness,
       questionId,
       username,
       email,
+      photos,
     } = params;
     const text = `
       INSERT INTO answers (
         body,
-        helpfulness,
         question_id,
         username,
         email
       )
-      VALUES ($1, $2, $3, $4, $5);
+      VALUES ($1, $2, $3, $4)
+      RETURNING id;
     `;
-    const result = await query(text, [body, helpfulness, questionId, username, email]);
+    const results = {
+      answer_id: 0,
+      photo_ids: [],
+    };
+    const answerResult = await query(text, [body, questionId, username, email]);
+
+    // add answer id to results
+    results.answer_id = answerResult.rows[0].id;
+    results.photo_ids = await Promise.all(photos.map(async (url) => {
+      const photoResult = await Photos.queryInsertPhoto(url, results.answer_id);
+      return photoResult.rows[0].id;
+    }));
+    return { status: true, data: results };
+  } catch (error) {
+    return { status: false, data: error };
+  }
+};
+
+exports.queryMarkAnswerHelpful = async (answerId) => {
+  try {
+    const result = await query(
+      `UPDATE answers
+       SET helpfulness = helpfulness + 1
+       WHERE id = $1`, [answerId],
+    );
     return { status: true, data: result };
   } catch (error) {
     return { status: false, data: error };
   }
 };
 
-exports.queryReportAnswer = (answerId) => {
-  const { rows } = query(
-    `UPDATE answers
-     SET reported = TRUE
-     WHERE id = $1}`, [answerId],
-  );
-  return rows;
+exports.queryReportAnswer = async (answerId) => {
+  try {
+    const result = await query(
+      `UPDATE answers
+       SET reported = $1
+       WHERE id = $2`, [true, answerId],
+    );
+    return { status: true, data: result };
+  } catch (error) {
+    return { status: false, data: error };
+  }
 };

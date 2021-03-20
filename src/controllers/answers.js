@@ -12,7 +12,6 @@ exports.getAnswers = async (req, res) => {
 
 exports.addNewAnswer = async (req, res) => {
   const { status, data } = await Answer.queryAddAnswer(req.body);
-
   if (status) {
     res.status(201);
   } else {
@@ -21,10 +20,22 @@ exports.addNewAnswer = async (req, res) => {
   res.send(data);
 };
 
-exports.markAnswerHelpful = (req, res) => {
-  res.send('NOT IMPLEMENTED: Mark answer as helpful');
+exports.markAnswerHelpful = async (req, res) => {
+  const { status } = await Answer.queryMarkAnswerHelpful(req.params.answer_id);
+  if (status) {
+    res.status(204);
+  } else {
+    res.status(422);
+  }
+  res.end();
 };
 
-exports.reportAnswer = (req, res) => {
-  res.send('NOT IMPLEMENTED: Report an answer');
+exports.reportAnswer = async (req, res) => {
+  const { status } = await Answer.queryReportAnswer(req.params.answer_id);
+  if (status) {
+    res.status(204);
+  } else {
+    res.status(422);
+  }
+  res.end();
 };

@@ -14,21 +14,21 @@ CREATE TABLE IF NOT EXISTS questions (
   product_id INT NOT NULL,
   body TEXT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  username VARCHAR(50) NOT NULL DEFAULT 'guest',
-  email VARCHAR(50) NOT NULL DEFAULT 'nobody@guest.com',
-  reported BOOLEAN NOT NULL DEFAULT FALSE,
-  helpfulness INT NOT NULL DEFAULT 0
+  username VARCHAR(50) DEFAULT 'guest',
+  email VARCHAR(50) DEFAULT 'nobody@guest.com',
+  reported BOOLEAN DEFAULT FALSE,
+  helpfulness INT DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS answers (
   id SERIAL PRIMARY KEY NOT NULL,
   question_id INT NOT NULL REFERENCES questions(id),
   body TEXT NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  username VARCHAR(50) NOT NULL DEFAULT 'guest',
-  email VARCHAR(50) NOT NULL DEFAULT 'nobody@guest.com',
-  reported BOOLEAN NOT NULL DEFAULT FALSE,
-  helpfulness INT NOT NULL DEFAULT 0
+  created_at TIMESTAMP DEFAULT NOW(),
+  username VARCHAR(50) DEFAULT 'guest',
+  email VARCHAR(50) DEFAULT 'nobody@guest.com',
+  reported BOOLEAN DEFAULT FALSE,
+  helpfulness INT DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS photos (
@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS photos (
 
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY NOT NULL,
-  username VARCHAR(100) UNIQUE NOT NULL DEFAULT 'guest',
-  email VARCHAR(50) UNIQUE NOT NULL DEFAULT 'guest@anon.com'
+  username VARCHAR(100) UNIQUE DEFAULT 'guest',
+  email VARCHAR(50) UNIQUE DEFAULT 'guest@anon.com'
 );
 
 COPY questions FROM '/home/kuyavinny/coding/questions.csv' CSV HEADER;
