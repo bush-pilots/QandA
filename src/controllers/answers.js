@@ -1,8 +1,14 @@
 import Answer from '../models/Answer';
 
 // Return exports list of exportsnswers for exports specific question
-exports.getAnswers = (req, res) => {
-  res.send('NOT IMPLEMENTED: Get a list of Answers');
+exports.getAnswers = async (req, res) => {
+  const results = await Answer.queryGetAnswers(
+    req.params.question_id,
+    req.query.limit,
+    req.query.page,
+    false,
+  );
+  res.send(results);
 };
 
 exports.addNewAnswer = (req, res) => {
