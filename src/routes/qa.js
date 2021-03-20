@@ -23,11 +23,11 @@ router.post('/questions/:question_id/answers', a.addNewAnswer);
 // Mark a question helpful
 router.put('/questions/:question_id/helpful', q.markQuestionHelpful);
 
-// Mark an answer helpful
-router.put('/answers/:answer_id/helpful', a.markAnswerHelpful);
-
 // Report a question
 router.put('/questions/:question_id/report', q.reportQuestion);
+
+// Mark an answer helpful
+router.put('/answers/:answer_id/helpful', a.markAnswerHelpful);
 
 // Report an answer
 router.put('/answers/:answer_id/report', a.reportAnswer);

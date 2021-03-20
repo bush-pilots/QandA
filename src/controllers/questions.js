@@ -24,10 +24,22 @@ exports.addQuestion = async (req, res) => {
   res.send(data);
 };
 
-exports.markQuestionHelpful = (req, res) => {
-  res.send('NOT IMPLEMENTED: Mark a question as helpful');
+exports.markQuestionHelpful = async (req, res) => {
+  const { status } = await Question.queryMarkQuestionHelpful(req.params.question_id);
+  if (status) {
+    res.status(204);
+  } else {
+    res.status(422);
+  }
+  res.end();
 };
 
-exports.reportQuestion = (req, res) => {
-  res.send('NOT IMPLEMENTED: Report a question');
+exports.reportQuestion = async (req, res) => {
+  const { status } = await Question.queryReportQuestion(req.params.question_id);
+  if (status) {
+    res.status(204);
+  } else {
+    res.status(422);
+  }
+  res.end();
 };

@@ -1,5 +1,5 @@
 import query from '../db/index';
-import Answer from './Answer';
+import Answers from './Answer';
 
 exports.queryGetQuestions = async (productId, limit = 5, page = 1) => {
   try {
@@ -18,7 +18,7 @@ exports.queryGetQuestions = async (productId, limit = 5, page = 1) => {
     const { rows } = await query(text, [productId, limit]);
     const questions = await Promise.all(rows.map(async (question) => ({
       ...question,
-      answers: await Answer.queryGetAnswers(question.question_id, limit, page, true),
+      questions: await Answers.queryGetAnswers(Answers.question_id, limit, page, true),
     })));
     return {
       status: true,
@@ -30,15 +30,40 @@ exports.queryGetQuestions = async (productId, limit = 5, page = 1) => {
 };
 
 exports.queryAddQuestion = async ({
-  body, reported, helpfulness, username, email, productId,
+  body, username, email, productId,
 }) => {
   try {
-    const { rows } = await query({
-      text: 'INSERT INTO questions (product_id, body, username, email, reported, helpfulness) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      values: [productId, body, username, email, reported, helpfulness],
+    const results = await query({
+      text: 'INSERT INTO questions (product_id, body, username, email) VALUES ($1, $2, $3, $4) RETURNING id',
+      values: [productId, body, username, email],
     });
-    const [record] = rows;
-    return { status: true, data: record };
+    return { status: true, data: results };
+  } catch (error) {
+    return { status: false, data: error };
+  }
+};
+
+exports.queryMarkQuestionHelpful = async (questionId) => {
+  try {
+    const result = await query(
+      `UPDATE questions
+       SET helpfulness = helpfulness + 1
+       WHERE id = $1`, [questionId],
+    );
+    return { status: true, data: result };
+  } catch (error) {
+    return { status: false, data: error };
+  }
+};
+
+exports.queryReportQuestion = async (questionId) => {
+  try {
+    const result = await query(
+      `UPDATE questions
+       SET reported = $1
+       WHERE id = $2`, [true, questionId],
+    );
+    return { status: true, data: result };
   } catch (error) {
     return { status: false, data: error };
   }

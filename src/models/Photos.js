@@ -6,7 +6,7 @@ exports.queryGetPhotos = async (answerId) => {
   return rows;
 };
 
-exports.queryInsertPhotos = async (url, answerId) => {
-  const { rows } = await query('INSERT INTO photos (url, answer_id) VALUES ($1, $2)', [url, answerId]);
-  return rows;
+exports.queryInsertPhoto = async (url, answerId) => {
+  const results = await query('INSERT INTO photos (url, answer_id) VALUES ($1, $2) RETURNING id', [url, answerId]);
+  return results;
 };
