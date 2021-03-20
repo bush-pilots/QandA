@@ -38,8 +38,8 @@ exports.queryAddQuestion = async ({
       values: [productId, body, username, email, reported, helpfulness],
     });
     const [record] = rows;
-    return record;
+    return { status: true, data: record };
   } catch (error) {
-    return (error.detail);
+    return { status: false, data: error };
   }
 };

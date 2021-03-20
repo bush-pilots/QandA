@@ -49,4 +49,21 @@ COPY photos FROM '/home/kuyavinny/coding/answers_photos.csv' CSV HEADER;
 
 SELECT pg_catalog.setval(pg_get_serial_sequence('questions', 'id'), MAX(id)) FROM questions;
 SELECT pg_catalog.setval(pg_get_serial_sequence('answers', 'id'), MAX(id)) FROM answers;
-SELECT pg_catalog.setval(pg_get_serial_sequence('photos', 'id'), MAX(id)) FROM answers_photos;
+SELECT pg_catalog.setval(pg_get_serial_sequence('photos', 'id'), MAX(id)) FROM photos;
+
+-- TIMING REPORTS BEFORE AND AFTER INDEXING AFTER A FRESH IMPORT
+\timing
+
+SELECT * FROM questions LIMIT 5;
+SELECT * FROM answers LIMIT 5;
+SELECT * FROM photos LIMIT 5;
+
+CREATE INDEX questions_id ON questions (id);
+CREATE INDEX answers_id ON answers (id);
+CREATE INDEX answers_question_id ON answers (question_id);
+CREATE INDEX photos_id ON photos (id);
+CREATE INDEX photos_answer_id ON photos (answer_id);
+
+SELECT * FROM questions LIMIT 5;
+SELECT * FROM answers LIMIT 5;
+SELECT * FROM photos LIMIT 5;
