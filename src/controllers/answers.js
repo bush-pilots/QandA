@@ -6,13 +6,19 @@ exports.getAnswers = async (req, res) => {
     req.params.question_id,
     req.query.limit,
     req.query.page,
-    false,
   );
   res.send(results);
 };
 
-exports.addNewAnswer = (req, res) => {
-  res.send('NOT IMPLEMENTED: Add a new Answer');
+exports.addNewAnswer = async (req, res) => {
+  const { status, data } = await Answer.queryAddAnswer(req.body);
+
+  if (status) {
+    res.status(201);
+  } else {
+    res.status(422);
+  }
+  res.send(data);
 };
 
 exports.markAnswerHelpful = (req, res) => {

@@ -18,7 +18,7 @@ router.get('/questions/:question_id/answers', a.getAnswers);
 router.post('/questions', q.addQuestion);
 
 // Add an answer
-router.post('/questions/:question_id/answers');
+router.post('/questions/:question_id/answers', a.addNewAnswer);
 
 // Mark a question helpful
 router.put('/questions/:question_id/helpful', q.markQuestionHelpful);

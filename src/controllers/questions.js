@@ -4,20 +4,24 @@ import Question from '../models/Question';
 exports.getQuestions = async (req, res) => {
   // eslint-disable-next-line camelcase
   const { product_id, limit, page } = req.query;
-  const results = await Question.queryGetQuestions(product_id, limit, page, true);
-  if (results.status) {
+  const { status, data } = await Question.queryGetQuestions(product_id, limit, page);
+  if (status) {
     res.status(200);
   } else {
-    res.status(204);
+    res.status(404);
   }
-  res.send(results.data);
+  res.send(data);
 };
 
 // Add a new question
 exports.addQuestion = async (req, res) => {
-  const result = await Question.queryAddQuestion(req.body);
-  res.status(201);
-  res.send(result);
+  const { status, data } = await Question.queryAddQuestion(req.body);
+  if (status) {
+    res.status(201);
+  } else {
+    res.status(422);
+  }
+  res.send(data);
 };
 
 exports.markQuestionHelpful = (req, res) => {

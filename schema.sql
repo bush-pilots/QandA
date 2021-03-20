@@ -1,3 +1,8 @@
+DROP DATABASE qaapidb;
+CREATE DATABASE qaapidb;
+
+\c qaapidb;
+
 -- DROP ALL TABLES --
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS questions CASCADE;
@@ -32,3 +37,33 @@ CREATE TABLE IF NOT EXISTS photos (
   url TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY NOT NULL,
+  username VARCHAR(100) UNIQUE NOT NULL DEFAULT 'guest',
+  email VARCHAR(50) UNIQUE NOT NULL DEFAULT 'guest@anon.com'
+);
+
+COPY questions FROM '/home/kuyavinny/coding/questions.csv' CSV HEADER;
+COPY answers FROM '/home/kuyavinny/coding/answers.csv' CSV HEADER;
+COPY photos FROM '/home/kuyavinny/coding/answers_photos.csv' CSV HEADER;
+
+SELECT pg_catalog.setval(pg_get_serial_sequence('questions', 'id'), MAX(id)) FROM questions;
+SELECT pg_catalog.setval(pg_get_serial_sequence('answers', 'id'), MAX(id)) FROM answers;
+SELECT pg_catalog.setval(pg_get_serial_sequence('photos', 'id'), MAX(id)) FROM photos;
+
+-- TIMING REPORTS BEFORE AND AFTER INDEXING AFTER A FRESH IMPORT
+\timing
+
+SELECT * FROM questions LIMIT 5;
+SELECT * FROM answers LIMIT 5;
+SELECT * FROM photos LIMIT 5;
+
+CREATE INDEX questions_id ON questions (id);
+CREATE INDEX answers_id ON answers (id);
+CREATE INDEX answers_question_id ON answers (question_id);
+CREATE INDEX photos_id ON photos (id);
+CREATE INDEX photos_answer_id ON photos (answer_id);
+
+SELECT * FROM questions LIMIT 5;
+SELECT * FROM answers LIMIT 5;
+SELECT * FROM photos LIMIT 5;
