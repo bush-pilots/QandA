@@ -1,23 +1,44 @@
 import query from '../db/index';
+import Answer from './Answer';
 
-exports.queryGetQuestions = async (productId) => {
+exports.queryGetQuestions = async (productId, limit = 5, page = 1, forQorA) => {
   try {
-    const { rows } = await query('SELECT * FROM questions WHERE product_id = $1 LIMIT', [productId]);
-    return rows;
+    const text = `
+      SELECT
+        id AS question_id,
+        body AS question_body,
+        created_at AS question_date,
+        username AS asker_name,
+        helpfulness AS question_helpfulness,
+        reported
+      FROM questions
+      WHERE product_id = $1
+      LIMIT $2
+    `;
+    const { rows } = await query(text, [productId, limit]);
+    const questions = await Promise.all(rows.map(async (question) => ({
+      ...question,
+      answers: await Answer.queryGetAnswers(question.question_id, limit, page, forQorA),
+    })));
+    return {
+      status: true,
+      data: { product_id: productId, results: questions },
+    };
   } catch (error) {
-    return ('Product does not contain any questions.');
+    return { status: false, data: 'Product does not contain any questions.' };
   }
 };
 
 exports.queryAddQuestion = async ({
-  id, body, reported, helpfulness, usernameId, productId, createdAt,
+  body, reported, helpfulness, username, email, productId,
 }) => {
   try {
     const { rows } = await query({
-      text: 'INSERT INTO questions (id, body, reported, helpfulness, username_id, product_id, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      values: [id, body, reported, helpfulness, usernameId, productId, createdAt],
+      text: 'INSERT INTO questions (product_id, body, username, email, reported, helpfulness) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      values: [productId, body, username, email, reported, helpfulness],
     });
-    return rows;
+    const [record] = rows;
+    return record;
   } catch (error) {
     return (error.detail);
   }

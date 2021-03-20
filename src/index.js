@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
-import query from './db/index';
 
 // Import routes
 import indexRouter from './routes/index';
