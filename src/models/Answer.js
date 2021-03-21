@@ -34,8 +34,8 @@ exports.queryGetAnswers = async (questionId, limit = 5, page = 1, forQorA) => {
     };
 
     return forQorA
-      ? { status: true, data: reduced }
-      : { status: true, data: forAnswerResult };
+      ? reduced
+      : forAnswerResult;
   } catch (error) {
     return { status: false, data: error };
   }
