@@ -4,24 +4,24 @@ import query from '../db/index';
 exports.queryGetAnswers = async (questionId, limit = 5, page = 1, forQorA) => {
   try {
     const textForQ = `
-      SELECT id, body, created_at AS date, username as answerer_name, helpfulness
-      FROM answers
-      WHERE question_id = $1
-      LIMIT $2
-    `;
+        SELECT id, body, created_at AS date, username as answerer_name, helpfulness
+        FROM answers
+        WHERE question_id = $1
+        LIMIT $2
+      `;
 
     const textForA = `
-      SELECT id AS answer_id, body, created_at AS date, username AS answerer_name, helpfulness
-      FROM answers
-      WHERE question_id = $1
-      LIMIT $2
-    `;
-    const { rows } = await query(forQorA ? textForQ : textForA, [questionId, limit]);
-    const answers = await Promise.all(rows.map(async (answer) => ({
+        SELECT id AS answer_id, body, created_at AS date, username AS answerer_name, helpfulness
+        FROM answers
+        WHERE question_id = $1
+        LIMIT $2
+      `;
+    const results = await query(forQorA ? textForQ : textForA, [questionId, limit]);
+    const answers = await Promise.all(results.rows.map(async (answer) => ({
       ...answer,
       photos: await Photos.queryGetPhotos(answer.id),
     }), {}));
-    const reduced = answers.reduce((acc, answer) => ({
+    const reduced = await answers.reduce((acc, answer) => ({
       ...acc,
       [forQorA ? answer.id : answer.answer_id]: answer,
     }), {});

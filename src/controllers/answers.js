@@ -2,12 +2,17 @@ import Answer from '../models/Answer';
 
 // Return exports list of exportsnswers for exports specific question
 exports.getAnswers = async (req, res) => {
-  const results = await Answer.queryGetAnswers(
+  const { status, data } = await Answer.queryGetAnswers(
     req.params.question_id,
     req.query.limit,
     req.query.page,
   );
-  res.send(results);
+  if (status) {
+    res.status(200);
+  } else {
+    res.status(404);
+  }
+  res.send(data);
 };
 
 exports.addNewAnswer = async (req, res) => {

@@ -51,12 +51,34 @@ SELECT pg_catalog.setval(pg_get_serial_sequence('questions', 'id'), MAX(id)) FRO
 SELECT pg_catalog.setval(pg_get_serial_sequence('answers', 'id'), MAX(id)) FROM answers;
 SELECT pg_catalog.setval(pg_get_serial_sequence('photos', 'id'), MAX(id)) FROM photos;
 
--- TIMING REPORTS BEFORE AND AFTER INDEXING AFTER A FRESH IMPORT
+
+-- TIMING REPORTS BEFORE INDEXING AFTER A FRESH IMPORT
+
 \timing
 
 SELECT * FROM questions LIMIT 5;
 SELECT * FROM answers LIMIT 5;
 SELECT * FROM photos LIMIT 5;
+
+\timing
+
+-- INDEX OPTIMIZATIONS
+
+CREATE INDEX questions_id ON questions (id);
+CREATE INDEX questions_product_id ON questions (id, product_id);
+CREATE INDEX answers_id ON answers (id);
+CREATE INDEX answers_question_id ON answers (id, question_id);
+CREATE INDEX photos_id ON photos (id);
+CREATE INDEX photos_answer_id ON photos (id, answer_id);
+
+-- TIMING REPORTS AFTER INDEXING AFTER A FRESH IMPORT
+\timing
+
+SELECT * FROM questions LIMIT 5;
+SELECT * FROM answers LIMIT 5;
+SELECT * FROM photos LIMIT 5;
+
+\timing
 
 CREATE INDEX questions_id ON questions (id);
 CREATE INDEX answers_id ON answers (id);
@@ -67,3 +89,4 @@ CREATE INDEX photos_answer_id ON photos (answer_id);
 SELECT * FROM questions LIMIT 5;
 SELECT * FROM answers LIMIT 5;
 SELECT * FROM photos LIMIT 5;
+

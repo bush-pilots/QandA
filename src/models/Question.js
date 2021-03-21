@@ -18,7 +18,7 @@ exports.queryGetQuestions = async (productId, limit = 5, page = 1) => {
     const { rows } = await query(text, [productId, limit]);
     const questions = await Promise.all(rows.map(async (question) => ({
       ...question,
-      questions: await Answers.queryGetAnswers(Answers.question_id, limit, page, true),
+      answers: await Answers.queryGetAnswers(question.question_id, limit, page, true),
     })));
     return {
       status: true,
