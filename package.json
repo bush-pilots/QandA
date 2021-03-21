@@ -1,0 +1,44 @@
+{
+  "name": "QandA",
+  "version": "1.0.0",
+  "description": "## API Access for Project Hotelier",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bush-pilots/QandA.git"
+  },
+  "keywords": [
+    "api",
+    "sdc"
+  ],
+  "author": "Glenmore Vinoya",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bush-pilots/QandA/issues"
+  },
+  "homepage": "https://github.com/bush-pilots/QandA#readme",
+  "devDependencies": {
+    "@babel/core": "^7.13.10",
+    "@babel/node": "^7.13.10",
+    "@babel/preset-env": "^7.13.10",
+    "eslint": "^7.22.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "@fast-csv/parse": "^4.3.6",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "node-postgres": "^0.6.2",
+    "pg": "^8.5.1"
+  }
+}
