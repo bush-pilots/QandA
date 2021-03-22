@@ -65,11 +65,11 @@ SELECT * FROM photos LIMIT 5;
 -- INDEX OPTIMIZATIONS
 
 CREATE INDEX questions_id ON questions (id);
-CREATE INDEX questions_product_id ON questions (id, product_id);
+CREATE INDEX questions_product_id ON questions (product_id, id);
 CREATE INDEX answers_id ON answers (id);
-CREATE INDEX answers_question_id ON answers (id, question_id);
+CREATE INDEX answers_question_id ON answers (question_id, id);
 CREATE INDEX photos_id ON photos (id);
-CREATE INDEX photos_answer_id ON photos (id, answer_id);
+CREATE INDEX photos_answer_id ON photos (answer_id, id);
 
 -- TIMING REPORTS AFTER INDEXING AFTER A FRESH IMPORT
 \timing
@@ -79,14 +79,3 @@ SELECT * FROM answers LIMIT 5;
 SELECT * FROM photos LIMIT 5;
 
 \timing
-
-CREATE INDEX questions_id ON questions (id);
-CREATE INDEX answers_id ON answers (id);
-CREATE INDEX answers_question_id ON answers (question_id);
-CREATE INDEX photos_id ON photos (id);
-CREATE INDEX photos_answer_id ON photos (answer_id);
-
-SELECT * FROM questions LIMIT 5;
-SELECT * FROM answers LIMIT 5;
-SELECT * FROM photos LIMIT 5;
-
