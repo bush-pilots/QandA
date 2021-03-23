@@ -108,3 +108,6 @@ dist
 
 # CSV Import
 src/db/csv/
+
+# other
+.env.bak

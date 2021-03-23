@@ -1,12 +1,6 @@
 const { Pool } = require('pg');
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'postgres',
-  database: 'qaapidb',
-  password: 'postgres',
-  port: 5432,
-});
+const pool = new Pool();
 
 const query = (text, values) => pool.query(text, values);
 

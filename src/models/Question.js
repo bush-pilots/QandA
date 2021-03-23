@@ -25,7 +25,7 @@ exports.queryGetQuestions = async (productId, limit = 5, page = 1) => {
       data: { product_id: productId, results: questions },
     };
   } catch (error) {
-    return { status: false, data: 'Product does not contain any questions.' };
+    return { status: false, data: error };
   }
 };
 
