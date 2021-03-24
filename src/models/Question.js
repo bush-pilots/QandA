@@ -5,24 +5,65 @@ exports.queryGetQuestions = async (productId, limit = 5, page = 1) => {
   try {
     const text = `
     SELECT
-    id AS question_id,
-    body AS question_body,
-    created_at AS question_date,
-    username AS asker_name,
-    helpfulness AS question_helpfulness,
-    reported
-    FROM questions
-    WHERE product_id = $1
+      q.id AS question_id,
+      q.body AS question_body,
+      q.created_at AS question_date,
+      q.username AS asker_name,
+      q.helpfulness AS question_helpfulness,
+      q.reported AS question_reported,
+      a.id AS answer_id,
+      a.body AS answer_body,
+      a.created_at AS answer_date,
+      a.username AS answerer_name,
+      a.helpfulness as answer_helpfulness,
+      p.url as photos_url
+    FROM questions q
+    LEFT JOIN answers a ON a.question_id = q.id
+    LEFT JOIN photos p ON p.answer_id = a.id
+    WHERE q.product_id = $1 AND q.reported = false
     LIMIT $2
     `;
     const { rows } = await query(text, [productId, limit]);
-    const questions = await Promise.all(rows.map(async (question) => ({
-      ...question,
-      answers: await Answers.queryGetAnswers(question.question_id, limit, page, true),
-    })));
+
+
+    const questions = {
+      product_id: productId,
+      results: [],
+    };
+    const answers = {
+    };
+    rows.forEach((row) => {
+      answers[row.answer_id] = {
+        id: row.answer_id,
+        body: row.answer_body,
+        date: row.answer_date,
+        answerer_name: row.answerer_name,
+        helpfulness: row.answer_helpfulness,
+        photos: [],
+      };
+    });
+    rows.forEach((row) => {
+      if (row.photos_url) {
+        answers[row.answer_id].photos.push(row.photos_url);
+      }
+    });
+    rows.forEach((row) => {
+      questions.results.push({
+        question_id: row.question_id,
+        question_body: row.question_body,
+        question_date: row.question_date,
+        asker_name: row.asker_name,
+        question_helpfulness: row.question_helpfulness,
+        reported: row.question_reported,
+        answers: {
+          ...answers,
+        },
+      });
+    });
+
     return {
       status: true,
-      data: { product_id: productId, results: questions },
+      data: questions,
     };
   } catch (error) {
     return { status: false, data: error };

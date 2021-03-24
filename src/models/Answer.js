@@ -1,41 +1,48 @@
 import Photos from './Photos';
 import query from '../db/index';
 
-exports.queryGetAnswers = async (questionId, limit = 5, page = 1, forQorA) => {
+exports.queryGetAnswers = async (questionId, limit = 5, page = 1) => {
   try {
-    const textForQ = `
-        SELECT id, body, created_at AS date, username as answerer_name, helpfulness
-        FROM answers
-        WHERE question_id = $1
+    const text = `
+        SELECT a.id AS id, a.body, a.created_at AS date, a.username AS answerer_name, a.helpfulness, p.url
+        FROM answers a
+        LEFT JOIN photos p ON p.id = a.id
+        WHERE a.question_id = $1 AND a.reported = false
         LIMIT $2
       `;
+    const { rows } = await query(text, [questionId, limit]);
 
-    const textForA = `
-        SELECT id AS answer_id, body, created_at AS date, username AS answerer_name, helpfulness
-        FROM answers
-        WHERE question_id = $1
-        LIMIT $2
-      `;
-    const results = await query(forQorA ? textForQ : textForA, [questionId, limit]);
-    const answers = await Promise.all(results.rows.map(async (answer) => ({
-      ...answer,
-      photos: await Photos.queryGetPhotos(answer.id),
-    }), {}));
-    const reduced = await answers.reduce((acc, answer) => ({
-      ...acc,
-      [forQorA ? answer.id : answer.answer_id]: answer,
-    }), {});
-
-    const forAnswerResult = {
+    const response = {
       question: questionId,
-      page,
+      page: 1,
       count: limit,
-      results: answers,
+      results: [],
     };
 
-    return forQorA
-      ? reduced
-      : { status: true, data: forAnswerResult };
+    rows.forEach((row) => {
+      const answer = {
+        id: null,
+        body: null,
+        date: null,
+        helpfulness: null,
+        photos: [],
+      };
+      if (answer.id && (answer.id === row.answers_id)) {
+        answer.photos = [...answer.photos, row.url];
+      } else {
+        answer.id = row.id;
+        answer.body = row.body;
+        answer.date = row.date;
+        answer.helpfulness = row.helpfulness;
+        answer.photos = [...answer.photos, row.url];
+      }
+      response.results.push(answer);
+    });
+
+    return {
+      status: true,
+      data: response,
+    };
   } catch (error) {
     return { status: false, data: error };
   }
@@ -61,15 +68,15 @@ exports.queryAddAnswer = async (params) => {
       RETURNING id;
     `;
     const results = {
-      answer_id: 0,
+      id: 0,
       photo_ids: [],
     };
     const answerResult = await query(text, [body, questionId, username, email]);
 
     // add answer id to results
-    results.answer_id = answerResult.rows[0].id;
+    results.id = answerResult.rows[0].id;
     results.photo_ids = await Promise.all(photos.map(async (url) => {
-      const photoResult = await Photos.queryInsertPhoto(url, results.answer_id);
+      const photoResult = await Photos.queryInsertPhoto(url, results.id);
       return photoResult.rows[0].id;
     }));
     return { status: true, data: results };
