@@ -1,41 +1,29 @@
 import Photos from './Photos';
 import query from '../db/index';
 
-exports.queryGetAnswers = async (questionId, limit = 5, page = 1, forQorA) => {
+exports.queryGetAnswers = async (questionId, limit = 5, page = 1) => {
   try {
-    const textForQ = `
-        SELECT id, body, created_at AS date, username as answerer_name, helpfulness
-        FROM answers
-        WHERE question_id = $1
-        LIMIT $2
-      `;
-
-    const textForA = `
+    const text = `
         SELECT id AS answer_id, body, created_at AS date, username AS answerer_name, helpfulness
         FROM answers
-        WHERE question_id = $1
+        WHERE question_id = $1 AND reported = false
         LIMIT $2
       `;
-    const results = await query(forQorA ? textForQ : textForA, [questionId, limit]);
+    const results = await query(text, [questionId, limit]);
     const answers = await Promise.all(results.rows.map(async (answer) => ({
       ...answer,
       photos: await Photos.queryGetPhotos(answer.id),
     }), {}));
-    const reduced = await answers.reduce((acc, answer) => ({
-      ...acc,
-      [forQorA ? answer.id : answer.answer_id]: answer,
-    }), {});
 
-    const forAnswerResult = {
-      question: questionId,
-      page,
-      count: limit,
-      results: answers,
+    return {
+      status: true,
+      data: {
+        question: questionId,
+        page,
+        count: limit,
+        results: answers,
+      },
     };
-
-    return forQorA
-      ? reduced
-      : { status: true, data: forAnswerResult };
   } catch (error) {
     return { status: false, data: error };
   }
