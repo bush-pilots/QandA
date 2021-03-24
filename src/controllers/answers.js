@@ -16,6 +16,7 @@ exports.getAnswers = async (req, res) => {
 };
 
 exports.addNewAnswer = async (req, res) => {
+  console.log(req.body);
   const { status, data } = await Answer.queryAddAnswer(req.body);
   if (status) {
     res.status(201);

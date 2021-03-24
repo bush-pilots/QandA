@@ -1,5 +1,4 @@
 import query from '../db/index';
-import Answers from './Answer';
 
 exports.queryGetQuestions = async (productId, limit = 5, page = 1) => {
   try {
@@ -24,7 +23,6 @@ exports.queryGetQuestions = async (productId, limit = 5, page = 1) => {
     LIMIT $2
     `;
     const { rows } = await query(text, [productId, limit]);
-
 
     const questions = {
       product_id: productId,
