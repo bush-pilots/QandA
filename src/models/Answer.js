@@ -4,44 +4,25 @@ import query from '../db/index';
 exports.queryGetAnswers = async (questionId, limit = 5, page = 1) => {
   try {
     const text = `
-        SELECT a.id AS id, a.body, a.created_at AS date, a.username AS answerer_name, a.helpfulness, p.url
-        FROM answers a
-        LEFT JOIN photos p ON p.id = a.id
-        WHERE a.question_id = $1 AND a.reported = false
+        SELECT id AS answer_id, body, created_at AS date, username AS answerer_name, helpfulness
+        FROM answers
+        WHERE question_id = $1 AND reported = false
         LIMIT $2
       `;
-    const { rows } = await query(text, [questionId, limit]);
-
-    const response = {
-      question: questionId,
-      page: 1,
-      count: limit,
-      results: [],
-    };
-
-    rows.forEach((row) => {
-      const answer = {
-        id: null,
-        body: null,
-        date: null,
-        helpfulness: null,
-        photos: [],
-      };
-      if (answer.id && (answer.id === row.answers_id)) {
-        answer.photos = [...answer.photos, row.url];
-      } else {
-        answer.id = row.id;
-        answer.body = row.body;
-        answer.date = row.date;
-        answer.helpfulness = row.helpfulness;
-        answer.photos = [...answer.photos, row.url];
-      }
-      response.results.push(answer);
-    });
+    const results = await query(text, [questionId, limit]);
+    const answers = await Promise.all(results.rows.map(async (answer) => ({
+      ...answer,
+      photos: await Photos.queryGetPhotos(answer.id),
+    }), {}));
 
     return {
       status: true,
-      data: response,
+      data: {
+        question: questionId,
+        page,
+        count: limit,
+        results: answers,
+      },
     };
   } catch (error) {
     return { status: false, data: error };
@@ -68,15 +49,15 @@ exports.queryAddAnswer = async (params) => {
       RETURNING id;
     `;
     const results = {
-      id: 0,
+      answer_id: 0,
       photo_ids: [],
     };
     const answerResult = await query(text, [body, questionId, username, email]);
 
     // add answer id to results
-    results.id = answerResult.rows[0].id;
+    results.answer_id = answerResult.rows[0].id;
     results.photo_ids = await Promise.all(photos.map(async (url) => {
-      const photoResult = await Photos.queryInsertPhoto(url, results.id);
+      const photoResult = await Photos.queryInsertPhoto(url, results.answer_id);
       return photoResult.rows[0].id;
     }));
     return { status: true, data: results };
