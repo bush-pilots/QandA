@@ -4,9 +4,9 @@
   "description": "## API Access for Project Hotelier",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "import": "node src/db/import.js"
+    "start:dev": "nodemon --exec babel-node src/index.js",
+    "start": "pm2 start src/server.js -i max",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
