@@ -32,4 +32,9 @@ router.put('/answers/:answer_id/helpful', a.markAnswerHelpful);
 // Report an answer
 router.put('/answers/:answer_id/report', a.reportAnswer);
 
+router.get('/', (req, res) => {
+  res.status(200);
+  res.send('healthy');
+});
+
 module.exports = router;
