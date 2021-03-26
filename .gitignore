@@ -107,4 +107,7 @@ dist
 .vscode/
 
 # CSV Import
-src/db/csvData/
+src/db/csv/
+
+# other
+.env.bak
